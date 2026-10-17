@@ -240,6 +240,7 @@ c4.metric(
     "Output Files",
     files_count
 )
+script_list = list(available.keys())
 
 filtered_scripts = [
     s for s in script_list
