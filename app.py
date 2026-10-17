@@ -114,11 +114,87 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-st.title("📈 NSE F&O VCP / Momentum Scanner Dashboard")
-st.caption("One-click runner for all your scanner scripts • Run any script or full PROD / PrePROD group")
+st.markdown("""
+<style>
+
+/* Main App */
+.stApp {
+    background: linear-gradient(135deg,#0B1120,#111827);
+}
+
+/* Header */
+.dashboard-header {
+    padding: 1rem;
+    border-radius: 15px;
+    background: linear-gradient(90deg,#0ea5e9,#2563eb);
+    color: white;
+    margin-bottom: 20px;
+}
+
+/* Cards */
+.metric-card {
+    background: #1f2937;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #374151;
+    text-align: center;
+}
+
+/* Sidebar */
+[data-testid="stSidebar"] {
+    background: #0f172a;
+}
+
+/* Tabs */
+.stTabs [data-baseweb="tab"] {
+    font-size: 15px;
+    font-weight: 600;
+    padding: .75rem 1rem;
+}
+
+/* Buttons */
+.stButton > button {
+    background: linear-gradient(90deg,#2563eb,#1d4ed8);
+    color: white;
+    border-radius: 10px;
+    border: none;
+    font-weight: bold;
+}
+
+.stButton > button:hover {
+    background: linear-gradient(90deg,#3b82f6,#2563eb);
+    transform: scale(1.02);
+}
+
+/* Metrics */
+div[data-testid="metric-container"] {
+    background-color: #111827;
+    border: 1px solid #334155;
+    padding: 15px;
+    border-radius: 12px;
+}
+
+/* File Cards */
+.file-card {
+    background: #111827;
+    border: 1px solid #334155;
+    padding: 12px;
+    border-radius: 10px;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<div class="dashboard-header">
+    <h1>📈 NSE F&O Scanner Pro</h1>
+    <p>Volume Contraction Pattern • Momentum • Ecosystem Scanner Dashboard</p>
+</div>
+""", unsafe_allow_html=True)
 
 with st.sidebar:
-    st.header("Controls")
+    st.markdown("## ⚙️ Control Center")
+    st.success("System Ready")
     target_date = st.date_input(
         "Target analysis date",
         value=date.today(),
@@ -141,13 +217,39 @@ tab_prod, tab_preprod, tab_all, tab_logs, tab_files = st.tabs(
 )
 
 available = list_available_scripts()
+files_count = len(get_output_files())
 
-def render_script_buttons(script_list, key_prefix):
+c1, c2, c3, c4 = st.columns(4)
+
+c1.metric(
+    "Available Scripts",
+    len(available)
+)
+
+c2.metric(
+    "PROD Scripts",
+    len(PROD_SCRIPTS)
+)
+
+c3.metric(
+    "PrePROD Scripts",
+    len(PREPROD_SCRIPTS)
+)
+
+c4.metric(
+    "Output Files",
+    files_count
+)
+
+filtered_scripts = [
+    s for s in script_list
+    if search_text.lower() in s.lower()
+]
     cols = st.columns(2)
-    for i, name in enumerate(script_list):
+    for i, name in enumerate(filtered_scripts):
         col = cols[i % 2]
         exists = name in available
-        label = f"{'✅' if exists else '❌'} {name}"
+        label = f"🟢 {name}" if exists else f"🔴 {name}"
         if col.button(label, key=f"{key_prefix}_{i}", disabled=not exists, use_container_width=True):
             with st.spinner(f"Running {name} …"):
                 start = time.time()
@@ -232,7 +334,16 @@ with tab_files:
             col1, col2, col3 = st.columns([4, 1, 1])
             size_kb = f.stat().st_size / 1024
             mtime = datetime.fromtimestamp(f.stat().st_mtime).strftime("%Y-%m-%d %H:%M")
-            col1.write(f"📄 **{f.name}**  \n{size_kb:.1f} KB · {mtime}")
+            col1.markdown(
+    f"""
+    <div class='file-card'>
+        <b>{f.name}</b><br>
+        {size_kb:.1f} KB<br>
+        {mtime}
+    </div>
+    """,
+    unsafe_allow_html=True
+)
             with open(f, "rb") as fp:
                 col2.download_button(
                     "Download",
@@ -246,6 +357,10 @@ with tab_files:
                 st.rerun()
 
 st.markdown("---")
-st.caption(
-    "You control every run. Excel files appear in the Output Files tab for download."
-)
+st.markdown("""
+---
+<center>
+<b>NSE Scanner Pro Dashboard</b><br>
+Production • Research • Momentum • VCP Analysis
+</center>
+""", unsafe_allow_html=True)
