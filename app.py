@@ -242,29 +242,39 @@ c4.metric(
 )
 
 filtered_scripts = [
-    s for s in available
+    s for s in script_list
     if search_text.lower() in s.lower()
 ]
+
 cols = st.columns(2)
+
 for i, name in enumerate(filtered_scripts):
     col = cols[i % 2]
     exists = name in available
     label = f"🟢 {name}" if exists else f"🔴 {name}"
-        if col.button(label, key=f"{key_prefix}_{i}", disabled=not exists, use_container_width=True):
-            with st.spinner(f"Running {name} …"):
-                start = time.time()
-                out, err, code = run_script(name, date_str)
-                elapsed = time.time() - start
-            st.session_state["last_log"] = {
-                "script": name,
-                "date": date_str,
-                "stdout": out,
-                "stderr": err,
-                "code": code,
-                "elapsed": elapsed,
-            }
-            st.rerun()
 
+    if col.button(
+        label,
+        key=f"{key_prefix}_{i}",
+        disabled=not exists,
+        use_container_width=True
+    ):
+        with st.spinner(f"Running {name} …"):
+            start = time.time()
+            out, err, code = run_script(name, date_str)
+            elapsed = time.time() - start
+
+        st.session_state["last_log"] = {
+            "script": name,
+            "date": date_str,
+            "stdout": out,
+            "stderr": err,
+            "code": code,
+            "elapsed": elapsed,
+        }
+
+        st.rerun()
+       
 with tab_prod:
     st.subheader("PROD Scheduler (mirrors PROD Python Scheduler.bat)")
     st.write("These five scripts match your production BAT.")
