@@ -249,7 +249,7 @@ cols = st.columns(2)
 for i, name in enumerate(filtered_scripts):
     col = cols[i % 2]
     exists = name in available
-        label = f"🟢 {name}" if exists else f"🔴 {name}"
+    label = f"🟢 {name}" if exists else f"🔴 {name}"
         if col.button(label, key=f"{key_prefix}_{i}", disabled=not exists, use_container_width=True):
             with st.spinner(f"Running {name} …"):
                 start = time.time()
