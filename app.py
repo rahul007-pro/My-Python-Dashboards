@@ -246,7 +246,7 @@ filtered_scripts = [
     if search_text.lower() in s.lower()
 ]
 cols = st.columns(2)
-    for i, name in enumerate(filtered_scripts):
+for i, name in enumerate(filtered_scripts):
         col = cols[i % 2]
         exists = name in available
         label = f"🟢 {name}" if exists else f"🔴 {name}"
