@@ -240,16 +240,15 @@ c4.metric(
     "Output Files",
     files_count
 )
-script_list = list(available.keys())
 
 filtered_scripts = [
-    s for s in script_list
+    s for s in available
     if search_text.lower() in s.lower()
 ]
 cols = st.columns(2)
 for i, name in enumerate(filtered_scripts):
-        col = cols[i % 2]
-        exists = name in available
+    col = cols[i % 2]
+    exists = name in available
         label = f"🟢 {name}" if exists else f"🔴 {name}"
         if col.button(label, key=f"{key_prefix}_{i}", disabled=not exists, use_container_width=True):
             with st.spinner(f"Running {name} …"):
